@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 Add your app
+  form(action='/files', method='post', enctype='multipart/form-data')
+    p 
+        input(type='text', required, name='title', maxlength='180', placeholder='Application title')
+    p 
+        input(type='file', required, name='zip', accept='.zip')
+    hr
+    p 
+        button(type='submit', class='btn btn-primary') Save and Upload

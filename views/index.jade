@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1 iOS Apps
+  a(href='files/new', class='btn btn-primary') ADD
+  if rows.length
+    ol  
+        each row in rows
+            li
+                a(href="files/#{row.id}/#{row.slug}") #{row.title}
