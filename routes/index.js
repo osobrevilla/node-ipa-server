@@ -35,26 +35,33 @@ exports.create = function (req, res) {
 };
 
 exports.save = function (req, res) {
-    model.add({
-        title: req.body.title,
-        tmpFile: req.files.zip.path,
-        downloadURL: 'http://' + req.get('host') + '/files/download/'
-    }, function (err) {
-        if (err)
-            throw err;
+    if (req.body.title && req.files.zip.path)
+        model.add({
+            title: req.body.title,
+            tmpFile: req.files.zip.path,
+            downloadURL: 'http://' + req.get('host') + '/files/download/'
+        }, function (err) {
+            if (err)
+                throw err;
+            res.redirect('/');
+        });
+    else 
         res.redirect('/');
-    });
 };
 
 exports.update = function (req, res) {};
 
 exports.remove = function (req, res) {
-    model.remove(req.params.id, function (err) {
-        if (err) {
-            console.log("Error: remove", err);
-        }
+    if (req.params.id){
+        model.remove(req.params.id, function (err) {
+            if (err) {
+                console.log("Error: remove", err);
+            }
+            res.redirect('/');
+        });
+    } else {
         res.redirect('/');
-    });
+    }
 };
 
 exports.download = function (req, res) {

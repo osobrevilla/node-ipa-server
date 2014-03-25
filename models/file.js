@@ -16,10 +16,15 @@ exports.one = function (id, fn) {
 
 exports.remove = function (id, fn) {
 
-    db.get("SELECT id, dir FROM ipas WHERE id=?", [id], function (err, file) {
-        if (err) throw err;
-        var dir = './public/files/' + file.dir;
+    db.get("SELECT * FROM ipas WHERE id=?", [id], function (err, file) {
+        if (err) {
+            fn(err);
+            console.log(err);
+            return;
+        }
+      
         if (file && file.dir) {
+            var dir = './public/files/' + file.dir;
             db.exec("DELETE FROM ipas WHERE id=" + file.id, function (err, file) {
                 exec('rm -rf ' + dir, function (err, out) {
                     fn(err, out);
