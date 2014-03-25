@@ -4,7 +4,7 @@ block content
   h1 #{title}
   a(class='btn btn-install', href='itms-services://?action=download-manifest&url=#{url}') INSTALL 
   a(class='btn btn-delete', onclick='del(event, this)', href="/files/delete/#{id}") DELETE
-  script
+  script.
     function del(e, el){
         e.preventDefault();
         if (confirm("Sure?"))
