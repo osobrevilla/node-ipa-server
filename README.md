@@ -1,4 +1,4 @@
 node-ipa-server
 ===============
 
-.ipa server for install ios apps usign the browser.
+.ipa server for install ios apps using the browser.
