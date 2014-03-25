@@ -11,6 +11,7 @@
     "slug": "*",
     "sqlite3": "*",
     "node-jsxml": "*",
-    "unzip": "*"
+    "unzip": "*",
+    "connect-multiparty": "*"
   }
 }
