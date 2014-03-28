@@ -6,6 +6,8 @@ var sqlite3 = require('sqlite3'),
     exec = require('child_process').exec,
     db = new sqlite3.Database('ipas.db');
 
+const UPLOAD_DIR = './public/files/';
+
 exports.all = function (fn) {
     db.all("SELECT * FROM ipas", fn);
 };
@@ -24,7 +26,7 @@ exports.remove = function (id, fn) {
         }
       
         if (file && file.dir) {
-            var dir = './public/files/' + file.dir;
+            var dir = UPLOAD_DIR + file.dir;
             db.exec("DELETE FROM ipas WHERE id=" + file.id, function (err, file) {
                 exec('rm -rf ' + dir, function (err, out) {
                     fn(err, out);
@@ -41,7 +43,7 @@ exports.remove = function (id, fn) {
 exports.add = function (args, fn) {
 
     var dirName = new Date().getFullYear() + '-' + new Date().getTime(),
-        dirPath = './public/files/' + dirName;
+        dirPath = UPLOAD_DIR + dirName;
 
     fs.mkdir(dirPath, function (e) {
 
