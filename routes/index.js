@@ -1,5 +1,7 @@
 var model = require('../models/file');
 
+const UPLOAD_DIR = './public/files/';
+
 exports.index = function (req, res) {
     model.all(function (err, files) {
         if (err) {
@@ -15,7 +17,7 @@ exports.one = function (req, res) {
 
     model.one(req.params.id, function (err, file) {
         if (err) {
-            console.log("Error:", err);
+            console.log('Error:', err);
             res.redirect('/');
         }
         if (file) {
@@ -55,7 +57,7 @@ exports.remove = function (req, res) {
     if (req.params.id){
         model.remove(req.params.id, function (err) {
             if (err) {
-                console.log("Error: remove", err);
+                console.log('Error: remove', err);
             }
             res.redirect('/');
         });
@@ -70,7 +72,7 @@ exports.download = function (req, res) {
             res.redirect('/');
         }
         if (file) {
-	        var filePath = './public/files/' + file.dir + '/' + file.name + '.ipa';
+	        var filePath = UPLOAD_DIR + file.dir + '/' + file.name + '.ipa';
 	        res.set('Content-Type', 'application/octet-stream');
 	        res.download(filePath);
     	} else {
@@ -88,7 +90,7 @@ exports.manifest = function (req, res) {
             return;
         }
         
-        var source = './public/files/' + file.dir + '/' + file.name + '.plist',
+        var source = UPLOAD_DIR + file.dir + '/' + file.name + '.plist',
             ipaUrl = 'http://' + req.get('host') + '/files/download/' + file.id;
 
         model.generatePLIST(source, ipaUrl, function (err, data) {
