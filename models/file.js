@@ -1,7 +1,7 @@
 var sqlite3 = require('sqlite3'),
     slug = require('slug'),
     fs = require('fs'),
-    jsxml = require("node-jsxml"),
+    jsxml = require('node-jsxml'),
     unzip = require('unzip'),
     exec = require('child_process').exec,
     db = new sqlite3.Database('ipas.db');
@@ -9,16 +9,16 @@ var sqlite3 = require('sqlite3'),
 const UPLOAD_DIR = './public/files/';
 
 exports.all = function (fn) {
-    db.all("SELECT * FROM ipas", fn);
+    db.all('SELECT * FROM ipas', fn);
 };
 
 exports.one = function (id, fn) {
-    db.get("SELECT * FROM ipas WHERE id=?", [id], fn);
+    db.get('SELECT * FROM ipas WHERE id=?', [id], fn);
 };
 
 exports.remove = function (id, fn) {
 
-    db.get("SELECT * FROM ipas WHERE id=?", [id], function (err, file) {
+    db.get('SELECT * FROM ipas WHERE id=?', [id], function (err, file) {
         if (err) {
             fn(err);
             console.log(err);
@@ -27,7 +27,7 @@ exports.remove = function (id, fn) {
       
         if (file && file.dir) {
             var dir = UPLOAD_DIR + file.dir;
-            db.exec("DELETE FROM ipas WHERE id=" + file.id, function (err, file) {
+            db.exec('DELETE FROM ipas WHERE id=' + file.id, function (err, file) {
                 exec('rm -rf ' + dir, function (err, out) {
                     fn(err, out);
                 });
@@ -56,7 +56,7 @@ exports.add = function (args, fn) {
                 } else {
                     entry.autodrain();
                 }
-            }).on("finish", function (e) {
+            }).on('finish', function (e) {
 
                 deleteTmpFile(args.tmpFile);
                 getIpaName(dirPath, function (fileName) {
@@ -72,7 +72,7 @@ exports.add = function (args, fn) {
                             fn(null);
                         });
                 });
-            }).on("error", function (e) {
+            }).on('error', function (e) {
                 fn(e);
             });
 
