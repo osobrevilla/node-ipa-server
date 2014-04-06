@@ -1,36 +1,33 @@
 var sqlite3 = require('sqlite3'),
     slug = require('slug'),
     fs = require('fs'),
-    jsxml = require("node-jsxml"),
     unzip = require('unzip'),
-    exec = require('child_process').exec,
-    db = new sqlite3.Database('ipas.db');
+    plist = require('simple-plist'),
+    tmp = require('temporary'),
+    db = new sqlite3.Database('database.db'),
+    PLIST_TEMPLATE = fs.readFileSync('./template.plist', 'utf8');
 
-exports.all = function (fn) {
-    db.all("SELECT * FROM ipas", fn);
+exports.all = function(fn) {
+    db.all("SELECT * FROM apps", fn);
 };
 
-exports.one = function (id, fn) {
-    db.get("SELECT * FROM ipas WHERE id=?", [id], fn);
+exports.one = function(id, fn) {
+    db.get("SELECT * FROM apps WHERE id=?", [id], fn);
 };
 
-exports.remove = function (id, fn) {
+exports.remove = function(id, fn) {
 
-    db.get("SELECT * FROM ipas WHERE id=?", [id], function (err, file) {
+    db.get("SELECT * FROM apps WHERE id=?", [id], function(err, file) {
         if (err) {
             fn(err);
-            console.log(err);
             return;
         }
-      
-        if (file && file.dir) {
-            var dir = './public/files/' + file.dir;
-            db.exec("DELETE FROM ipas WHERE id=" + file.id, function (err, file) {
-                exec('rm -rf ' + dir, function (err, out) {
-                    fn(err, out);
+        if (file && file.name) {
+            var filePath = './public/files/' + file.name;
+            db.run("DELETE FROM apps WHERE id=?", [file.id], function(err, file) {
+                fs.unlink(filePath, function(err) {
+                    fn(err);
                 });
-                if (err)
-                    fn(err, out);
             });
         } else {
             fn(err);
@@ -38,84 +35,58 @@ exports.remove = function (id, fn) {
     });
 };
 
-exports.add = function (args, fn) {
+exports.add = function(args, fn) {
 
-    var dirName = new Date().getFullYear() + '-' + new Date().getTime(),
-        dirPath = './public/files/' + dirName;
+    var saveFileName = new Date().getFullYear() + '-' + new Date().getTime(),
+        destFilePath = './public/files/' + saveFileName,
+        sqlQuery = 'INSERT INTO apps (title, slug, name, bundleId, bundleName) VALUES (?, ?, ?, ?, ?)',
+        save = function(entry) {
 
-    fs.mkdir(dirPath, function (e) {
+            if (/Info\.plist/.test(entry.path)) {
 
-        fs.createReadStream(args.tmpFile)
-            .pipe(unzip.Parse())
-            .on('entry', function (entry) {
-                var fileName = entry.path;
-                if ((/\.(ipa|plist)$/i).test(fileName)) {
-                    entry.pipe(fs.createWriteStream(dirPath + '/' + fileName));
-                } else {
-                    entry.autodrain();
-                }
-            }).on("finish", function (e) {
+                var tmpFile = new tmp.File();
 
-                deleteTmpFile(args.tmpFile);
-                getIpaName(dirPath, function (fileName) {
-                    var params = [
-                        args.title,
-                        slug(args.title.trim().toLowerCase()),
-                        dirName,
-                        fileName
-                    ];
-                    db.run('INSERT INTO ipas (title, slug, dir, name) VALUES (?, ?, ?, ?)', params,
-                        function (err, row) {
-                            if (err) throw err;
-                            fn(null);
+                entry.pipe(fs.createWriteStream(tmpFile.path)).on('close', function() {
+
+                    var plistJSON = plist.readFileSync(tmpFile.path),
+                        sqlParams = [
+                            args.title,
+                            slug(args.title.trim().toLowerCase()),
+                            saveFileName,
+                            plistJSON.CFBundleIdentifier,
+                            plistJSON.CFBundleName
+                        ];
+                    db.run(sqlQuery, sqlParams, function(err, row) {
+                        if (err) {
+                            tmpFile.unlink();
+                            throw err;
+                        }
+                        fs.rename(args.tmpFile, destFilePath, function() {
+                            if (err)
+                                throw err;
+                            tmpFile.unlink();
+                            fn(err);
                         });
+                    });
+
                 });
-            }).on("error", function (e) {
-                fn(e);
-            });
 
-    });
-}
-
-exports.generatePLIST = function (source, ipaUrl, fn) {
-
-    fs.readFile(source, 'utf8', function (err, data) {
-
-        if (err)
-            fn(err);
-
-        var xml = new jsxml.XML(data);
-
-        xml.child('dict')
-            .child('array')
-            .child("dict")
-            .child('array')
-            .child('dict')
-            .child('string')
-            .children()
-            .each(function (item, i) {
-                if (i === 1) {
-                    item.setValue(ipaUrl);
-                    fn(null, xml.toXMLString());
-                }
-            });
-    });
-};
-
-function deleteTmpFile(file) {
-    fs.unlink(file, function (err) {
-        if (err) throw err;
-    });
-}
-
-function getIpaName(dir, fn) {
-    fs.readdir(dir, function (err, files) {
-        if (err) throw err;
-        for (var i = 0; i < files.length; i++) {
-            if ((/\.ipa$/i).test(files[i])) {
-                fn(files[i].replace(/\.ipa$/i, ''));
-                break;
+            } else {
+                entry.autodrain();
             }
-        }
-    });
+        };
+
+
+    fs.createReadStream(args.tmpFile)
+        .pipe(unzip.Parse())
+        .on('entry', save).on("error", function(err) {
+            fn(err);
+        });
+}
+
+exports.generatePLIST = function(title, bundle, url, fn) {
+    fn(PLIST_TEMPLATE
+        .replace(/{{APP_TITLE}}/, title)
+        .replace(/{{APP_URL}}/, url)
+        .replace(/{{APP_BUNDLE}}/, bundle));
 };
