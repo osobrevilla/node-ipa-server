@@ -35,6 +35,7 @@ exports.remove = function(id, fn) {
     });
 };
 
+
 exports.add = function(args, fn) {
 
     var saveFileName = new Date().getFullYear() + '-' + new Date().getTime(),
@@ -68,7 +69,6 @@ exports.add = function(args, fn) {
                             fn(err);
                         });
                     });
-
                 });
 
             } else {

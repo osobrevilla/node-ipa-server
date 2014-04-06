@@ -1,5 +1,6 @@
 var model = require('../models/file');
 
+
 exports.index = function(req, res) {
     model.all(function(err, files) {
         if (err) {
@@ -15,7 +16,7 @@ exports.one = function(req, res) {
 
     model.one(req.params.id, function(err, file) {
         if (err) {
-            console.log("Error:", err);
+            console.log('Error:', err);
             res.redirect('/');
         }
         if (file) {
@@ -54,7 +55,7 @@ exports.remove = function(req, res) {
     if (req.params.id) {
         model.remove(req.params.id, function(err) {
             if (err) {
-                console.log("Error: remove", err);
+                console.log('Error: remove', err);
             }
             res.redirect('/');
         });
@@ -75,6 +76,7 @@ exports.download = function(req, res) {
         } else {
             res.status(404).send('Not found');
         }
+
     });
 };
 
