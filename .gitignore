@@ -1,2 +1,5 @@
 /node_modules
-/files
+/files/*.*
+*.db
+*.sqlite
+*.sqlite3
