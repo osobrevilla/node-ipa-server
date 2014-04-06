@@ -41,6 +41,11 @@ exports.add = function(args, fn) {
     var saveFileName = new Date().getFullYear() + '-' + new Date().getTime(),
         destFilePath = './public/files/' + saveFileName,
         sqlQuery = 'INSERT INTO apps (title, slug, name, bundleId, bundleName) VALUES (?, ?, ?, ?, ?)',
+        delIpaTmpFile = function() {
+            fs.unlink(args.tmpFile, function(err) {
+
+            });
+        },
         save = function(entry) {
 
             if (/Info\.plist/.test(entry.path)) {
@@ -60,15 +65,13 @@ exports.add = function(args, fn) {
                     db.run(sqlQuery, sqlParams, function(err, row) {
                         if (err) {
                             tmpFile.unlink();
-                            fs.unlink(args.tmpFile);
+                            delIpaTmpFile();
                             throw err;
                         }
                         fs.rename(args.tmpFile, destFilePath, function() {
                             if (err)
                                 throw err;
-                            tmpFile.unlink();
-                            fs.unlink(args.tmpFile);
-                            fn(err);
+                            delIpaTmpFile();
                         });
                     });
                 });
