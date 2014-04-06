@@ -68,10 +68,11 @@ exports.add = function(args, fn) {
                             delIpaTmpFile();
                             throw err;
                         }
-                        fs.rename(args.tmpFile, destFilePath, function() {
+                        fs.rename(args.tmpFile, destFilePath, function(err) {
                             if (err)
                                 throw err;
                             delIpaTmpFile();
+                            fn(err);
                         });
                     });
                 });
