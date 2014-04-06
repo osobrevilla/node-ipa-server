@@ -60,12 +60,14 @@ exports.add = function(args, fn) {
                     db.run(sqlQuery, sqlParams, function(err, row) {
                         if (err) {
                             tmpFile.unlink();
+                            fs.unlink(args.tmpFile);
                             throw err;
                         }
                         fs.rename(args.tmpFile, destFilePath, function() {
                             if (err)
                                 throw err;
                             tmpFile.unlink();
+                            fs.unlink(args.tmpFile);
                             fn(err);
                         });
                     });
