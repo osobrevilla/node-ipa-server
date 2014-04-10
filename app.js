@@ -14,7 +14,6 @@ var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 
 var routes = require('./routes');
-var users = require('./routes/user');
 
 var app = express();
 
