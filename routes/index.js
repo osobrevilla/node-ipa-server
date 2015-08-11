@@ -1,7 +1,7 @@
 var model = require('../models/file');
 
-
 exports.index = function(req, res) {
+    console.log("index");
     model.all(function(err, files) {
         if (err) {
             throw error;
@@ -36,17 +36,20 @@ exports.create = function(req, res) {
 };
 
 exports.save = function(req, res) {
-    if (req.body.title && req.files.ipa.path)
+    if (req.body.title && req.file) {
         model.add({
             title: req.body.title,
-            tmpFile: req.files.ipa.path
+            bundleId: req.body.bundleId,
+            version: req.body.version,
+            path: req.file.path
         }, function(err) {
             if (err)
                 throw err;
             res.redirect('/');
         });
-    else
+    } else {
         res.redirect('/');
+    }
 };
 
 exports.update = function(req, res) {};
@@ -91,7 +94,7 @@ exports.manifest = function(req, res) {
 
         var url = 'http://' + req.get('host') + '/files/download/' + file.id;
 
-        model.generatePLIST(file.bundleName, file.bundleId, url, function(data) {
+        model.generatePLIST(file.bundleName, file.bundleId, file.version, url, function(data) {
             if (err) {
                 res.redirect('/');
                 return;

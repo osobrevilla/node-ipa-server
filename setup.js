@@ -36,7 +36,7 @@ function createDatabase() {
 
 function createTable() {
     out('Create table "apps" if not exist');
-    var sql = 'CREATE TABLE IF NOT EXISTS apps (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, slug TEXT, name TEXT, bundleId TEXT, bundleName TEXT)';
+    var sql = 'CREATE TABLE IF NOT EXISTS apps (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, slug TEXT, name TEXT, bundleId TEXT, bundleName TEXT, version TEXT)';
     db.exec(sql, function(err) {
         db.close();
         if (err) throw err;

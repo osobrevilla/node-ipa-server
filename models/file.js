@@ -35,64 +35,43 @@ exports.remove = function(id, fn) {
     });
 };
 
-
-exports.add = function(args, fn) {
+exports.add = function(app, fn) {
 
     var saveFileName = new Date().getFullYear() + '-' + new Date().getTime(),
         destFilePath = './public/files/' + saveFileName,
-        sqlQuery = 'INSERT INTO apps (title, slug, name, bundleId, bundleName) VALUES (?, ?, ?, ?, ?)',
-        delIpaTmpFile = function() {
-            fs.unlink(args.tmpFile, function(err) {
+        sqlQuery = 'INSERT INTO apps (title, slug, name, bundleId, bundleName, version) VALUES (?, ?, ?, ?, ?, ?)',
+        sqlParams;
 
-            });
-        },
-        save = function(entry) {
+    function delIpaTmpFile() {
+        fs.unlink(app.path, new Function());
+    };
 
-            if (/Info\.plist/.test(entry.path)) {
+    sqlParams = [
+        app.title,
+        slug(app.title.trim().toLowerCase()),
+        saveFileName,
+        app.bundleId,
+        app.bundleId.split(".").pop(),
+        app.version
+    ];
 
-                var tmpFile = new tmp.File();
-
-                entry.pipe(fs.createWriteStream(tmpFile.path)).on('close', function() {
-
-                    var plistJSON = plist.readFileSync(tmpFile.path),
-                        sqlParams = [
-                            args.title,
-                            slug(args.title.trim().toLowerCase()),
-                            saveFileName,
-                            plistJSON.CFBundleIdentifier,
-                            plistJSON.CFBundleName
-                        ];
-                    db.run(sqlQuery, sqlParams, function(err, row) {
-                        if (err) {
-                            tmpFile.unlink();
-                            delIpaTmpFile();
-                            throw err;
-                        }
-                        fs.rename(args.tmpFile, destFilePath, function(err) {
-                            if (err)
-                                throw err;
-                            delIpaTmpFile();
-                            fn(err);
-                        });
-                    });
-                });
-
-            } else {
-                entry.autodrain();
-            }
-        };
-
-
-    fs.createReadStream(args.tmpFile)
-        .pipe(unzip.Parse())
-        .on('entry', save).on("error", function(err) {
+    db.run(sqlQuery, sqlParams, function(err, row) {
+        if (err) {
+            delIpaTmpFile();
+            fn(err)
+        }
+        fs.rename(app.path, destFilePath, function(err) {
+            delIpaTmpFile();
             fn(err);
         });
+    });
+
 }
 
-exports.generatePLIST = function(title, bundle, url, fn) {
+exports.generatePLIST = function(title, bundle, version, url, fn) {
     fn(PLIST_TEMPLATE
         .replace(/{{APP_TITLE}}/, title)
         .replace(/{{APP_URL}}/, url)
-        .replace(/{{APP_BUNDLE}}/, bundle));
+        .replace(/{{APP_BUNDLE}}/, bundle)
+        .replace(/{{VERSION}}/, version));
 };

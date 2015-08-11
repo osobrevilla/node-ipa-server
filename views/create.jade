@@ -6,6 +6,10 @@ block content
     p 
         input(type='text', required, name='title', maxlength='180', placeholder='Application title')
     p 
+        input(type='text', required, name='bundleId', maxlength='180', placeholder='Bundle Identifier (e.g. com.site.myapp)')
+    p 
+        input(type='text', required, name='version', maxlength='2', placeholder='Version (e.g. 1.0)')
+    p 
         input(type='file', required, name='ipa', accept='.ipa')
     hr
     p 
