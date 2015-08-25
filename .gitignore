@@ -1,5 +1,6 @@
 /node_modules
-/files/*.*
 *.db
 *.sqlite
 *.sqlite3
+public/files/*
+sslkeys/*

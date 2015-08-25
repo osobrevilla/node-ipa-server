@@ -23,7 +23,7 @@ exports.one = function(req, res) {
             res.render('single', {
                 id: file.id,
                 title: file.title,
-                url: 'http://' + req.get('host') + '/files/manifest/' + file.id
+                url: 'https://' + req.get('host') + '/files/manifest/' + file.id
             });
         } else {
             res.status(404).send('Not found');
@@ -92,7 +92,7 @@ exports.manifest = function(req, res) {
             return;
         }
 
-        var url = 'http://' + req.get('host') + '/files/download/' + file.id;
+        var url = 'https://' + req.get('host') + '/files/download/' + file.id;
 
         model.generatePLIST(file.bundleName, file.bundleId, file.version, url, function(data) {
             if (err) {
