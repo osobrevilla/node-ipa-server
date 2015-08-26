@@ -16,11 +16,11 @@ This create database file and tables
 $ npm start
 ```
  
-#### 2. Uploading .IPA files
+#### 3. Uploading .IPA files
 
 - Generate **.ipa** application with Xcode (Product -> Archive), do not forget to attach the **"adhoc-profile"**.
 - Go to **https://yourdomain.com** and upload the ipa file by completing the form.
 
-#### 3. Install in Device
+#### 4. Install in Device
 
 - Go to server URL from iOS device browser, select your app from the list and install.
