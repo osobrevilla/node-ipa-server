@@ -1,12 +1,26 @@
-node-ipa-server (beta)
-===============
+# Getting Started
 
-.ipa server for install ios apps over http
+IPA server for install ios apps over https (SSL Cert Required!!!)
 
-### How use
+#### 1. Install
 
-1. $ npm install (inside node-ipa-server directory)
-2. $ npm start
-4. Generate **.ipa** application with xcode (Product -> archive), do not forget to attach "adhoc-profile".
-5. Go to http://localhost:3000 and upload the ipa file by completing the form.
-6. Go to server url from iOS device, select your app and install.
+```sh
+$ npm install
+```
+
+This create database file and tables
+
+#### 2. Run
+
+```sh
+$ npm start
+```
+ 
+#### 2. Uploading .IPA files
+
+- Generate **.ipa** application with Xcode (Product -> Archive), do not forget to attach the **"adhoc-profile"**.
+- Go to **https://yourdomain.com** and upload the ipa file by completing the form.
+
+#### 3. Install in Device
+
+- Go to server URL from iOS device browser, select your app from the list and install.
