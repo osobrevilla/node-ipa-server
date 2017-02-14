@@ -1,17 +1,29 @@
 #!/usr/bin/env node
-var fs = require("fs");
-var https = require('https');
-var http = require("http");
-var debug = require('debug')('my-application');
 
-var app = require('../app');
+const fs = require("fs");
+const https = require('https');
+const http = require("http");
+const debug = require('debug')('my-application');
+const path = require('path');
+const app = require('../app');
 
 app.set('port', process.env.PORT || 443);
 
-var privateKey = fs.readFileSync( 'sslkeys/server.key', 'utf-8');
-var certificate = fs.readFileSync( 'sslkeys/server.pem', 'utf-8');
+let key,
+  cert;
+
+try {
+  key = fs.readFileSync(path.resolve(__dirname + '/../sslkeys/server.key'), 'utf-8');
+  cert = fs.readFileSync(path.resolve(__dirname + '/../sslkeys/server.cert'), 'utf-8');
+} catch (e) {
+  console.error(".cert or .key SSL files not found inside sslkeys directory", e);
+  return;
+}
 
 http.createServer(app).listen(80);
-https.createServer({ key: privateKey, cert: certificate }, app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
-});
+https.createServer({
+  key,
+  cert
+}, app).listen(app.get('port'), () =>
+  console.log('Express server listening on port ' + app.get('port'))
+);
