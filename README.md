@@ -1,6 +1,6 @@
 # Getting Started
 
-IPA server for install ios apps over https (SSL Cert Required!!!)
+IPA server for install ios apps over https (SSL Cert Required!, see [letsencrypt.org](https://letsencrypt.org/))
 
 #### 1. Install
 
