@@ -3,7 +3,7 @@ var fs = require("fs");
 var https = require('https');
 var http = require("http");
 var debug = require('debug')('my-application');
-require('../setup').install();
+
 var app = require('../app');
 
 app.set('port', process.env.PORT || 443);
