@@ -1,7 +1,6 @@
 var fs = require('fs'),
     sqlite3 = require('sqlite3').verbose(),
     stdout = process.stdout,
-    __dirname = require('path').dirname(),
     databaseName = 'database.db',
 
     filesPath = __dirname + '/public/files',
