@@ -8,14 +8,14 @@ var fs = require('fs'),
     databasePath = __dirname + '/' + databaseName,
     db = null;
 
-exports.install = function() {
-    // create files directory if not exist
-    if (!fs.existsSync(filesPath))
-        createFilesDirectory();
-    // create sqlite database
-    if (!fs.existsSync(databasePath))
-        createDatabase();
-}
+
+// create files directory if not exist
+if (!fs.existsSync(filesPath))
+    createFilesDirectory();
+// create sqlite database
+if (!fs.existsSync(databasePath))
+    createDatabase();
+
 
 function createFilesDirectory() {
     out('Create files dir.');
