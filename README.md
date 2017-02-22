@@ -19,7 +19,7 @@ $ npm start
 #### 3. Uploading .IPA files
 
 - Generate **.ipa** application with Xcode (Product -> Archive), do not forget to attach the **"adhoc-profile"**.
-- Go to **https://yourdomain.com** and upload the ipa file by completing the form.
+- Go to server running and upload the .ipa file filling the form.
 
 #### 4. Install in Device
 
